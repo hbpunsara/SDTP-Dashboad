@@ -5,6 +5,7 @@ use App\Http\Controllers\PublicController;
 use App\Http\Controllers\DataSimulationController;
 use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Admin\SensorController;
+use App\Http\Controllers\Auth\AdminLoginController;
 
 /*
 |--------------------------------------------------------------------------
@@ -28,13 +29,18 @@ Route::get('/api/sensors', [PublicController::class, 'getSensors']);
 Route::get('/api/sensors/{id}/readings', [PublicController::class, 'getSensorReadings']);
 
 // Authentication Routes
-Route::middleware(['auth'])->group(function () {
+Route::get('/login', [AdminLoginController::class, 'showLoginForm'])->name('login');
+Route::post('/login', [AdminLoginController::class, 'login']);
+Route::post('/logout', [AdminLoginController::class, 'logout'])->name('logout');
+
+// Admin protected routes
+Route::middleware(['admin'])->group(function () {
     // Admin Dashboard Routes
     Route::get('/admin/dashboard', [DashboardController::class, 'index'])->name('admin.dashboard');
     
     // Sensor Management Routes
     Route::resource('admin/sensors', SensorController::class, ['as' => 'admin']);
-    Route::post('/admin/sensors/{id}/toggle-active', [SensorController::class, 'toggleActive'])->name('admin.sensors.toggle-active');
+    Route::patch('/admin/sensors/{id}/toggle-status', [SensorController::class, 'toggleStatus'])->name('admin.sensors.toggle-status');
     
     // Data Simulation Routes
     Route::get('/admin/data-simulation', [DataSimulationController::class, 'index'])->name('admin.data-simulation');

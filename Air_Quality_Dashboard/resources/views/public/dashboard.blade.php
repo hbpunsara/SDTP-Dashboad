@@ -81,6 +81,36 @@
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
         attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
     }).addTo(map);
+    
+    // Add custom control for adding a new sensor
+    @auth
+    const addSensorControl = L.Control.extend({
+        options: {
+            position: 'bottomright'
+        },
+        
+        onAdd: function(map) {
+            const container = L.DomUtil.create('div', 'leaflet-bar leaflet-control');
+            const button = L.DomUtil.create('a', 'add-sensor-btn', container);
+            button.innerHTML = '<i class="fas fa-plus-circle"></i> Add New Sensor';
+            button.title = 'Add a new sensor location';
+            button.href = '{{ route("admin.sensors.create") }}';
+            button.style.display = 'flex';
+            button.style.alignItems = 'center';
+            button.style.justifyContent = 'center';
+            button.style.padding = '8px 12px';
+            button.style.backgroundColor = '#0d6efd';
+            button.style.color = 'white';
+            button.style.fontWeight = 'bold';
+            button.style.textDecoration = 'none';
+            button.style.borderRadius = '4px';
+            button.style.minWidth = '140px';
+            
+            return container;
+        }
+    });
+    new addSensorControl().addTo(map);
+    @endauth
 
     // Sample data (placeholder) - this would be replaced with real data from your backend
     const sensorData = [
@@ -170,3 +200,13 @@
     }
 </script>
 @endsection
+
+<script>
+    var map = L.map('map').setView([6.9271, 79.8612], 13);
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(map);
+
+    @foreach ($sensors as $sensor)
+    var marker = L.marker([{{ $sensor->latitude }}, {{ $sensor->longitude }}]).addTo(map);
+    marker.bindPopup("<b>{{ $sensor->name }}</b><br>AQI: {{ $sensor->latestReading->aqi }}");
+    @endforeach
+</script>
