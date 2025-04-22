@@ -1,22 +1,18 @@
-@extends('layouts.app')
+@extends('layouts.admin')
 
 @section('content')
-<div class="container">
-    <div class="row mb-4">
-        <div class="col">
-            <h1 class="h3">Edit Sensor</h1>
-            <p class="text-muted">Update details for sensor {{ $sensor->sensor_id }}</p>
-        </div>
-        <div class="col-auto">
-            <a href="{{ route('admin.sensors.index') }}" class="btn btn-outline-secondary">
-                <i class="fas fa-arrow-left me-1"></i> Back to Sensors
-            </a>
-        </div>
-    </div>
+<div class="container-fluid px-4">
+    <h1 class="mt-4">Edit Sensor</h1>
+    <ol class="breadcrumb mb-4">
+        <li class="breadcrumb-item"><a href="{{ route('admin.dashboard') }}">Dashboard</a></li>
+        <li class="breadcrumb-item"><a href="{{ route('admin.sensors.index') }}">Sensors</a></li>
+        <li class="breadcrumb-item active">Edit Sensor - {{ $sensor->sensor_id }}</li>
+    </ol>
 
-    <div class="card shadow-sm">
+    <div class="card mb-4">
         <div class="card-header">
-            <h5 class="mb-0">Sensor Details</h5>
+            <i class="fas fa-map-marker-alt me-1"></i>
+            Sensor Details
         </div>
         <div class="card-body">
             <form action="{{ route('admin.sensors.update', $sensor->id) }}" method="POST">
@@ -97,7 +93,7 @@
                     
                     <div class="col-md-6">
                         <label class="form-label">Sensor Location (Click to update position) <span class="text-danger">*</span></label>
-                        <div id="map" style="height: 400px; border-radius: 5px;" class="mb-3"></div>
+                        <div id="sensorEditMap" style="height: 400px; width: 100%;" class="mb-3"></div>
                         <div class="alert alert-info">
                             <i class="fas fa-info-circle me-1"></i> Click anywhere on the map to update the sensor location. The map is bounded to Colombo area.
                         </div>
@@ -105,6 +101,9 @@
                 </div>
                 
                 <div class="d-flex justify-content-end">
+                    <a href="{{ route('admin.sensors.index') }}" class="btn btn-secondary me-2">
+                        <i class="fas fa-times me-1"></i> Cancel
+                    </a>
                     <button type="submit" class="btn btn-primary">
                         <i class="fas fa-save me-1"></i> Update Sensor
                     </button>
@@ -113,13 +112,9 @@
         </div>
     </div>
 </div>
+@endsection
 
-<!-- Leaflet CSS -->
-<link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
-
-<!-- Leaflet JavaScript -->
-<script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
-
+@section('scripts')
 <script>
     document.addEventListener('DOMContentLoaded', function() {
         // Initialize sensor coordinates from existing data
@@ -127,7 +122,7 @@
         var sensorLng = {{ $sensor->longitude }};
         
         // Initialize the map centered on the sensor location
-        var map = L.map('map').setView([sensorLat, sensorLng], 13);
+        var map = L.map('sensorEditMap').setView([sensorLat, sensorLng], 13);
         
         // Add the OpenStreetMap tiles
         L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
@@ -166,80 +161,6 @@
             document.getElementById('latitude').value = position.lat.toFixed(6);
             document.getElementById('longitude').value = position.lng.toFixed(6);
         });
-        
-        // Create a custom control for updating sensor location
-        var updateLocationControl = L.Control.extend({
-            options: {
-                position: 'bottomright'
-            },
-            
-            onAdd: function(map) {
-                var container = L.DomUtil.create('div', 'leaflet-bar leaflet-control');
-                var button = L.DomUtil.create('a', 'update-location-btn', container);
-                button.innerHTML = '<i class="fas fa-map-marker-alt"></i> Update Location';
-                button.title = 'Set this location';
-                button.href = '#';
-                button.style.display = 'flex';
-                button.style.alignItems = 'center';
-                button.style.justifyContent = 'center';
-                button.style.padding = '8px 12px';
-                button.style.backgroundColor = '#0d6efd';
-                button.style.color = 'white';
-                button.style.fontWeight = 'bold';
-                button.style.textDecoration = 'none';
-                button.style.borderRadius = '4px';
-                button.style.minWidth = '140px';
-                
-                L.DomEvent.on(button, 'click', L.DomEvent.stop)
-                    .on(button, 'click', function() {
-                        // Get current marker position
-                        var position = marker.getLatLng();
-                        
-                        // Update form fields with current marker position
-                        document.getElementById('latitude').value = position.lat.toFixed(6);
-                        document.getElementById('longitude').value = position.lng.toFixed(6);
-                        
-                        // Show confirmation message
-                        var successMsg = L.DomUtil.create('div', 'leaflet-bar leaflet-control');
-                        successMsg.innerHTML = '<div class="alert alert-success" style="white-space: nowrap;"><i class="fas fa-check-circle me-1"></i> Location updated!</div>';
-                        successMsg.style.position = 'absolute';
-                        successMsg.style.bottom = '60px';
-                        successMsg.style.right = '10px';
-                        map.getContainer().appendChild(successMsg);
-                        
-                        // Highlight the update button to encourage form submission
-                        var submitBtn = document.querySelector('button[type="submit"]');
-                        submitBtn.classList.add('btn-pulse');
-                        
-                        // Add pulse animation class if it doesn't exist
-                        if (!document.getElementById('pulse-animation')) {
-                            var style = document.createElement('style');
-                            style.id = 'pulse-animation';
-                            style.innerHTML = `
-                                @keyframes btn-pulse {
-                                    0% { box-shadow: 0 0 0 0 rgba(13, 110, 253, 0.7); }
-                                    70% { box-shadow: 0 0 0 10px rgba(13, 110, 253, 0); }
-                                    100% { box-shadow: 0 0 0 0 rgba(13, 110, 253, 0); }
-                                }
-                                .btn-pulse {
-                                    animation: btn-pulse 1.5s infinite;
-                                }
-                            `;
-                            document.head.appendChild(style);
-                        }
-                        
-                        // Remove message after 3 seconds
-                        setTimeout(function() {
-                            map.getContainer().removeChild(successMsg);
-                        }, 3000);
-                    });
-                
-                return container;
-            }
-        });
-        
-        // Add the custom control to the map
-        map.addControl(new updateLocationControl());
     });
 </script>
 @endsection

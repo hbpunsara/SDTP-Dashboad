@@ -1,22 +1,18 @@
-@extends('layouts.app')
+@extends('layouts.admin')
 
 @section('content')
-<div class="container">
-    <div class="row mb-4">
-        <div class="col">
-            <h1 class="h3">Register New Sensor</h1>
-            <p class="text-muted">Add a new simulated air quality sensor in Colombo</p>
-        </div>
-        <div class="col-auto">
-            <a href="{{ route('admin.sensors.index') }}" class="btn btn-outline-secondary">
-                <i class="fas fa-arrow-left me-1"></i> Back to Sensors
-            </a>
-        </div>
-    </div>
+<div class="container-fluid px-4">
+    <h1 class="mt-4">Register New Sensor</h1>
+    <ol class="breadcrumb mb-4">
+        <li class="breadcrumb-item"><a href="{{ route('admin.dashboard') }}">Dashboard</a></li>
+        <li class="breadcrumb-item"><a href="{{ route('admin.sensors.index') }}">Sensors</a></li>
+        <li class="breadcrumb-item active">Register New Sensor</li>
+    </ol>
 
-    <div class="card shadow-sm">
+    <div class="card mb-4">
         <div class="card-header">
-            <h5 class="mb-0">Sensor Details</h5>
+            <i class="fas fa-map-marker-alt me-1"></i>
+            Sensor Details
         </div>
         <div class="card-body">
             <form action="{{ route('admin.sensors.store') }}" method="POST">
@@ -95,7 +91,7 @@
                     
                     <div class="col-md-6">
                         <label class="form-label">Sensor Location (Click to set position) <span class="text-danger">*</span></label>
-                        <div id="map" style="height: 400px; border-radius: 5px;" class="mb-3"></div>
+                        <div id="sensorCreateMap" style="height: 400px; width: 100%;" class="mb-3"></div>
                         <div class="alert alert-info">
                             <i class="fas fa-info-circle me-1"></i> Click anywhere on the map to set the sensor location. The map is bounded to Colombo area.
                         </div>
@@ -103,6 +99,9 @@
                 </div>
                 
                 <div class="d-flex justify-content-end">
+                    <a href="{{ route('admin.sensors.index') }}" class="btn btn-secondary me-2">
+                        <i class="fas fa-times me-1"></i> Cancel
+                    </a>
                     <button type="submit" class="btn btn-primary">
                         <i class="fas fa-save me-1"></i> Register Sensor
                     </button>
@@ -111,19 +110,15 @@
         </div>
     </div>
 </div>
+@endsection
 
-<!-- Leaflet CSS -->
-<link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
-
-<!-- Leaflet JavaScript -->
-<script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
-
+@section('scripts')
 <script>
     document.addEventListener('DOMContentLoaded', function() {
         // Initialize the map centered on the selected coordinates or default to Colombo center
         var initialLat = {{ old('latitude') ? old('latitude') : (request()->get('lat') ? request()->get('lat') : 6.927079) }};
         var initialLng = {{ old('longitude') ? old('longitude') : (request()->get('lng') ? request()->get('lng') : 79.861243) }};
-        var map = L.map('map').setView([initialLat, initialLng], 12);
+        var map = L.map('sensorCreateMap').setView([initialLat, initialLng], 12);
         
         // Add the OpenStreetMap tiles
         L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
@@ -166,62 +161,6 @@
             document.getElementById('latitude').value = position.lat.toFixed(6);
             document.getElementById('longitude').value = position.lng.toFixed(6);
         });
-        
-        // Create a custom control for adding a sensor
-        var addSensorControl = L.Control.extend({
-            options: {
-                position: 'bottomright'
-            },
-            
-            onAdd: function(map) {
-                var container = L.DomUtil.create('div', 'leaflet-bar leaflet-control');
-                var button = L.DomUtil.create('a', 'add-sensor-btn', container);
-                button.innerHTML = '<i class="fas fa-plus-circle"></i> Add Sensor Here';
-                button.title = 'Set this location';
-                button.href = '#';
-                button.style.display = 'flex';
-                button.style.alignItems = 'center';
-                button.style.justifyContent = 'center';
-                button.style.padding = '8px 12px';
-                button.style.backgroundColor = '#0d6efd';
-                button.style.color = 'white';
-                button.style.fontWeight = 'bold';
-                button.style.textDecoration = 'none';
-                button.style.borderRadius = '4px';
-                button.style.minWidth = '140px';
-                
-                L.DomEvent.on(button, 'click', L.DomEvent.stop)
-                    .on(button, 'click', function() {
-                        // Get current marker position
-                        var position = marker.getLatLng();
-                        
-                        // Update form fields with current marker position
-                        document.getElementById('latitude').value = position.lat.toFixed(6);
-                        document.getElementById('longitude').value = position.lng.toFixed(6);
-                        
-                        // Focus on the next form field (location name)
-                        document.getElementById('location').focus();
-                        
-                        // Show confirmation message
-                        var successMsg = L.DomUtil.create('div', 'leaflet-bar leaflet-control');
-                        successMsg.innerHTML = '<div class="alert alert-success" style="white-space: nowrap;"><i class="fas fa-check-circle me-1"></i> Location selected!</div>';
-                        successMsg.style.position = 'absolute';
-                        successMsg.style.bottom = '60px';
-                        successMsg.style.right = '10px';
-                        map.getContainer().appendChild(successMsg);
-                        
-                        // Remove message after 3 seconds
-                        setTimeout(function() {
-                            map.getContainer().removeChild(successMsg);
-                        }, 3000);
-                    });
-                
-                return container;
-            }
-        });
-        
-        // Add the custom control to the map
-        map.addControl(new addSensorControl());
     });
 </script>
 @endsection

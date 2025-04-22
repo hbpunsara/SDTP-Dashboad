@@ -19,9 +19,7 @@ use App\Http\Controllers\Auth\AdminLoginController;
 */
 
 // Public Routes
-Route::get('/', function() {
-    return view('simplified-dashboard');
-});
+Route::get('/', [PublicController::class, 'index']);
 Route::get('/historical-data', [PublicController::class, 'historicalData']);
 
 // Data API Routes
@@ -47,4 +45,11 @@ Route::middleware(['admin'])->group(function () {
     Route::post('/admin/data-simulation/start', [DataSimulationController::class, 'start'])->name('admin.data-simulation.start');
     Route::post('/admin/data-simulation/stop', [DataSimulationController::class, 'stop'])->name('admin.data-simulation.stop');
     Route::post('/admin/data-simulation/generate', [DataSimulationController::class, 'generate'])->name('admin.data-simulation.generate');
+    
+    // Alert Threshold Management Routes
+    Route::resource('admin/alerts', \App\Http\Controllers\Admin\AlertThresholdController::class, ['as' => 'admin']);
+    Route::patch('/admin/alerts/{id}/toggle-notification', [\App\Http\Controllers\Admin\AlertThresholdController::class, 'toggleNotification'])->name('admin.alerts.toggle-notification');
+    
+    // User Management Routes
+    Route::resource('admin/users', \App\Http\Controllers\Admin\UserController::class, ['as' => 'admin']);
 });

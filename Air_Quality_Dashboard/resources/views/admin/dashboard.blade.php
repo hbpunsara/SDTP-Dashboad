@@ -1,125 +1,116 @@
-@extends('layouts.app')
+@extends('layouts.admin')
 
 @section('content')
-<div class="container">
-    <div class="row mb-4">
-        <div class="col">
-            <h1 class="h3">Admin Dashboard</h1>
-            <p class="text-muted">Monitor and manage the Air Quality system</p>
-        </div>
-        <div class="col-auto">
-            <div class="btn-group">
-                <a href="{{ route('admin.sensors.index') }}" class="btn btn-primary">
-                    <i class="fas fa-map-marker-alt me-1"></i> Manage Sensors
-                </a>
-                <a href="{{ route('admin.data-simulation') }}" class="btn btn-outline-primary">
-                    <i class="fas fa-chart-line me-1"></i> Data Simulation
-                </a>
-            </div>
-        </div>
-    </div>
+<div class="container-fluid px-4">
+    <h1 class="mt-4">Admin Dashboard</h1>
+    <ol class="breadcrumb mb-4">
+        <li class="breadcrumb-item active">Dashboard</li>
+    </ol>
 
     <!-- Status Cards Section -->
     <div class="row mb-4">
-        <div class="col-md-3">
-            <div class="card border-0 shadow-sm h-100">
-                <div class="card-body text-center">
-                    <div class="display-4 text-primary mb-2">{{ $sensorStats['total'] }}</div>
-                    <h5 class="text-muted">Total Sensors</h5>
-                    <div class="mt-3">
-                        <div class="d-flex justify-content-between text-muted mb-1">
-                            <span>Active: {{ $sensorStats['active'] }}</span>
-                            <span>Inactive: {{ $sensorStats['inactive'] }}</span>
+        <div class="col-xl-3 col-md-6">
+            <div class="card bg-primary text-white mb-4">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <div class="small">Total Sensors</div>
+                            <div class="fs-3">{{ $sensorStats['total'] }}</div>
                         </div>
-                        <div class="progress" style="height: 8px;">
-                            <div class="progress-bar bg-success" role="progressbar" 
-                                 style="width: {{ ($sensorStats['active'] / $sensorStats['total']) * 100 }}%" 
-                                 aria-valuemin="0" aria-valuemax="100"></div>
-                        </div>
+                        <i class="fas fa-map-marker-alt fa-2x"></i>
                     </div>
                 </div>
-                <div class="card-footer bg-light">
-                    <a href="{{ route('admin.sensors.index') }}" class="text-decoration-none d-flex justify-content-between align-items-center">
-                        <span>View All Sensors</span>
-                        <i class="fas fa-arrow-right"></i>
-                    </a>
+                <div class="card-footer d-flex align-items-center justify-content-between">
+                    <div>Active: {{ $sensorStats['active'] }} | Inactive: {{ $sensorStats['inactive'] }}</div>
+                    <a class="small text-white stretched-link" href="{{ route('admin.sensors.index') }}">View Details</a>
+                    <div class="small text-white"><i class="fas fa-angle-right"></i></div>
                 </div>
             </div>
         </div>
 
-        <div class="col-md-3">
-            <div class="card border-0 shadow-sm h-100">
-                <div class="card-body text-center">
-                    <div class="display-4 text-danger mb-2">{{ $sensorStats['critical_alerts'] }}</div>
-                    <h5 class="text-muted">Critical Alerts</h5>
-                    <div class="mt-3">
-                        <div class="alert alert-danger py-2">
-                            <small><i class="fas fa-exclamation-triangle me-1"></i> Requires attention</small>
+        <div class="col-xl-3 col-md-6">
+            <div class="card bg-danger text-white mb-4">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <div class="small">Critical Alerts</div>
+                            <div class="fs-3">{{ $sensorStats['critical_alerts'] }}</div>
                         </div>
+                        <i class="fas fa-exclamation-triangle fa-2x"></i>
                     </div>
                 </div>
-                <div class="card-footer bg-light">
-                    <a href="#" class="text-decoration-none d-flex justify-content-between align-items-center">
-                        <span>View Alerts</span>
-                        <i class="fas fa-arrow-right"></i>
-                    </a>
-                </div>
-            </div>
-        </div>
-
-        <div class="col-md-3">
-            <div class="card border-0 shadow-sm h-100">
-                <div class="card-body text-center">
-                    <div class="icon-wrapper mb-3">
-                        <i class="fas fa-server text-info fa-2x"></i>
-                    </div>
-                    <h5 class="text-muted">System Status</h5>
-                    <div class="mt-3">
-                        <span class="badge bg-success px-3 py-2">{{ $systemStats['system_status'] }}</span>
-                    </div>
-                </div>
-                <div class="card-footer bg-light">
-                    <div class="text-decoration-none d-flex justify-content-between align-items-center">
-                        <span>Uptime: {{ $systemStats['system_uptime'] }}</span>
-                    </div>
+                <div class="card-footer d-flex align-items-center justify-content-between">
+                    <div>Requires immediate attention</div>
+                    <a class="small text-white stretched-link" href="{{ route('admin.sensors.index') }}?filter=critical">View Alerts</a>
+                    <div class="small text-white"><i class="fas fa-angle-right"></i></div>
                 </div>
             </div>
         </div>
 
-        <div class="col-md-3">
-            <div class="card border-0 shadow-sm h-100">
-                <div class="card-body text-center">
-                    <div class="icon-wrapper mb-3">
-                        <i class="fas fa-database text-success fa-2x"></i>
-                    </div>
-                    <h5 class="text-muted">Data Points</h5>
-                    <div class="mt-3">
-                        <h3>{{ $systemStats['data_points_collected'] }}</h3>
+        <div class="col-xl-3 col-md-6">
+            <div class="card bg-success text-white mb-4">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <div class="small">System Status</div>
+                            <div class="fs-5">{{ $systemStats['system_status'] }}</div>
+                        </div>
+                        <i class="fas fa-server fa-2x"></i>
                     </div>
                 </div>
-                <div class="card-footer bg-light">
-                    <div class="text-decoration-none d-flex justify-content-between align-items-center">
-                        <span>Last Sync: {{ $systemStats['last_data_sync'] }}</span>
+                <div class="card-footer d-flex align-items-center justify-content-between">
+                    <div>Uptime: {{ $systemStats['system_uptime'] }}</div>
+                    <a class="small text-white stretched-link" href="{{ route('admin.data-simulation') }}">View Details</a>
+                    <div class="small text-white"><i class="fas fa-angle-right"></i></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xl-3 col-md-6">
+            <div class="card bg-info text-white mb-4">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <div class="small">Data Points</div>
+                            <div class="fs-5">{{ $systemStats['data_points_collected'] }}</div>
+                        </div>
+                        <i class="fas fa-database fa-2x"></i>
                     </div>
+                </div>
+                <div class="card-footer d-flex align-items-center justify-content-between">
+                    <div>Last Sync: {{ substr($systemStats['last_data_sync'], 0, 16) }}</div>
+                    <a class="small text-white stretched-link" href="{{ route('admin.data-simulation') }}">Simulate Data</a>
+                    <div class="small text-white"><i class="fas fa-angle-right"></i></div>
                 </div>
             </div>
         </div>
     </div>
 
     <div class="row">
-        <!-- Recent Readings Section -->
-        <div class="col-md-8">
-            <div class="card shadow-sm">
-                <div class="card-header bg-white">
-                    <div class="d-flex justify-content-between align-items-center">
-                        <h5 class="mb-0">Recent Air Quality Readings</h5>
-                        <a href="#" class="btn btn-sm btn-outline-secondary">View All</a>
-                    </div>
+        <!-- Sensor Map -->
+        <div class="col-xl-6">
+            <div class="card mb-4">
+                <div class="card-header">
+                    <i class="fas fa-map-marked-alt me-1"></i>
+                    Sensor Network Map
                 </div>
-                <div class="card-body p-0">
+                <div class="card-body">
+                    <div id="adminMap" style="height: 400px; width: 100%;"></div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Recent Readings Section -->
+        <div class="col-xl-6">
+            <div class="card mb-4">
+                <div class="card-header">
+                    <i class="fas fa-table me-1"></i>
+                    Recent Air Quality Readings
+                </div>
+                <div class="card-body">
                     <div class="table-responsive">
-                        <table class="table table-hover mb-0">
-                            <thead class="table-light">
+                        <table class="table table-bordered table-striped table-hover">
+                            <thead class="table-dark">
                                 <tr>
                                     <th>Sensor ID</th>
                                     <th>Location</th>
@@ -169,130 +160,158 @@
                 </div>
             </div>
         </div>
-
-        <!-- Quick Actions Section -->
-        <div class="col-md-4">
-            <div class="card shadow-sm mb-4">
-                <div class="card-header bg-white">
-                    <h5 class="mb-0">Quick Actions</h5>
-                </div>
-                <div class="card-body">
-                    <div class="list-group list-group-flush">
-                        <a href="{{ route('admin.sensors.create') }}" class="list-group-item list-group-item-action d-flex align-items-center">
-                            <div class="me-3 bg-primary text-white rounded p-2">
-                                <i class="fas fa-plus"></i>
-                            </div>
-                            Add New Sensor
-                        </a>
-                        <a href="{{ route('admin.data-simulation') }}" class="list-group-item list-group-item-action d-flex align-items-center">
-                            <div class="me-3 bg-success text-white rounded p-2">
-                                <i class="fas fa-play"></i>
-                            </div>
-                            Start Data Simulation
-                        </a>
-                        <a href="#" class="list-group-item list-group-item-action d-flex align-items-center">
-                            <div class="me-3 bg-info text-white rounded p-2">
-                                <i class="fas fa-download"></i>
-                            </div>
-                            Download Reports
-                        </a>
-                        <a href="#" class="list-group-item list-group-item-action d-flex align-items-center">
-                            <div class="me-3 bg-warning text-white rounded p-2">
-                                <i class="fas fa-cog"></i>
-                            </div>
-                            System Settings
-                        </a>
-                    </div>
-                </div>
-            </div>
-
-            <div class="card shadow-sm">
-                <div class="card-header bg-white">
-                    <h5 class="mb-0">Latest Activity</h5>
-                </div>
-                <div class="card-body p-0">
-                    <ul class="list-group list-group-flush">
-                        <li class="list-group-item py-3">
-                            <div class="d-flex">
-                                <div class="me-3">
-                                    <div class="bg-primary text-white rounded-circle p-2" style="width: 32px; height: 32px; display: flex; align-items: center; justify-content: center;">
-                                        <i class="fas fa-plus"></i>
-                                    </div>
-                                </div>
-                                <div>
-                                    <p class="mb-0">New sensor added: {{ $sensorStats['latest_added'] }}</p>
-                                    <small class="text-muted">Today at 09:45 AM</small>
-                                </div>
-                            </div>
-                        </li>
-                        <li class="list-group-item py-3">
-                            <div class="d-flex">
-                                <div class="me-3">
-                                    <div class="bg-warning text-white rounded-circle p-2" style="width: 32px; height: 32px; display: flex; align-items: center; justify-content: center;">
-                                        <i class="fas fa-exclamation-triangle"></i>
-                                    </div>
-                                </div>
-                                <div>
-                                    <p class="mb-0">Alert triggered at Pettah Market</p>
-                                    <small class="text-muted">Yesterday at 4:23 PM</small>
-                                </div>
-                            </div>
-                        </li>
-                        <li class="list-group-item py-3">
-                            <div class="d-flex">
-                                <div class="me-3">
-                                    <div class="bg-success text-white rounded-circle p-2" style="width: 32px; height: 32px; display: flex; align-items: center; justify-content: center;">
-                                        <i class="fas fa-sync"></i>
-                                    </div>
-                                </div>
-                                <div>
-                                    <p class="mb-0">System maintenance completed</p>
-                                    <small class="text-muted">April 20, 2025</small>
-                                </div>
-                            </div>
-                        </li>
-                    </ul>
-                </div>
-            </div>
-        </div>
     </div>
 </div>
 @endsection
 
-@extends('layouts.admin')
+@section('scripts')
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Initialize the map
+        const adminMap = L.map('adminMap').setView([6.9271, 79.8612], 12); // Colombo coordinates
 
-@section('content')
-<div class="container">
-    <h1>Sensor Management</h1>
-    <table class="table">
-        <thead>
-            <tr>
-                <th>Sensor ID</th>
-                <th>Name</th>
-                <th>Location</th>
-                <th>Status</th>
-                <th>Actions</th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach ($sensors as $sensor)
-            <tr>
-                <td>{{ $sensor->sensor_id }}</td>
-                <td>{{ $sensor->name }}</td>
-                <td>{{ $sensor->location }}</td>
-                <td>{{ $sensor->is_active ? 'Active' : 'Inactive' }}</td>
-                <td>
-                    <a href="{{ route('admin.sensors.edit', $sensor->id) }}" class="btn btn-primary">Edit</a>
-                    <form action="{{ route('admin.sensors.toggle-active', $sensor->id) }}" method="POST" style="display:inline;">
-                        @csrf
-                        <button type="submit" class="btn btn-warning">
-                            {{ $sensor->is_active ? 'Deactivate' : 'Activate' }}
-                        </button>
-                    </form>
-                </td>
-            </tr>
-            @endforeach
-        </tbody>
-    </table>
-</div>
+        // Add tile layer (OpenStreetMap)
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+        }).addTo(adminMap);
+        
+        // Fetch sensors data from API
+        fetch('/api/sensors')
+            .then(response => response.json())
+            .then(sensors => {
+                // Function to get marker color based on AQI
+                function getMarkerColor(aqi) {
+                    if (!aqi) return "gray";
+                    if (aqi <= 50) return "green";
+                    if (aqi <= 100) return "yellow";
+                    if (aqi <= 150) return "orange";
+                    if (aqi <= 200) return "red";
+                    if (aqi <= 300) return "purple";
+                    return "black";
+                }
+                
+                // Add markers for each sensor
+                sensors.forEach(sensor => {
+                    // Skip inactive sensors or sensors without readings
+                    if (!sensor.is_active) return;
+                    
+                    const aqi = sensor.latest_reading ? sensor.latest_reading.aqi : null;
+                    const markerColor = getMarkerColor(aqi);
+                    
+                    // Create a custom icon
+                    const sensorIcon = L.divIcon({
+                        className: 'custom-marker',
+                        html: `<div style="background-color: ${markerColor}; width: 20px; height: 20px; border-radius: 50%; border: 2px solid white;"></div>`,
+                        iconSize: [20, 20],
+                        iconAnchor: [10, 10]
+                    });
+                    
+                    // Add marker to map
+                    const marker = L.marker([sensor.latitude, sensor.longitude], { icon: sensorIcon }).addTo(adminMap);
+                    
+                    // Get AQI category
+                    let category = "Unknown";
+                    if (aqi !== null) {
+                        if (aqi <= 50) category = "Good";
+                        else if (aqi <= 100) category = "Moderate";
+                        else if (aqi <= 150) category = "Unhealthy for Sensitive Groups";
+                        else if (aqi <= 200) category = "Unhealthy";
+                        else if (aqi <= 300) category = "Very Unhealthy";
+                        else category = "Hazardous";
+                    }
+                    
+                    // Add popup with improved styling
+                    marker.bindPopup(`
+                        <div class="sensor-popup">
+                            <h5 class="popup-title">${sensor.name}</h5>
+                            <div class="sensor-info">
+                                <div class="sensor-location"><i class="fas fa-map-marker-alt"></i> ${sensor.location}</div>
+                                <div class="sensor-id text-muted">ID: ${sensor.sensor_id}</div>
+                                <div class="aqi-display mt-2">
+                                    <span class="aqi-label">Air Quality Index:</span>
+                                    <span class="aqi-value" style="background-color: ${markerColor}; color: ${markerColor === 'yellow' ? '#000' : '#fff'};">
+                                        ${aqi || 'N/A'}
+                                    </span>
+                                    <span class="aqi-category">${category}</span>
+                                </div>
+                            </div>
+                        </div>
+                    `);
+                });
+            })
+            .catch(error => {
+                console.error('Error fetching sensors:', error);
+                document.getElementById('adminMap').innerHTML = `
+                    <div class="alert alert-warning">
+                        <i class="fas fa-exclamation-triangle me-2"></i>
+                        Could not load sensor data. Please refresh the page or try again later.
+                    </div>
+                `;
+            });
+    });
+</script>
+
+<style>
+    /* Custom styles for the sensor popups */
+    .sensor-popup {
+        padding: 5px;
+    }
+    
+    .popup-title {
+        font-weight: bold;
+        margin-bottom: 8px;
+        color: #0d6efd;
+        border-bottom: 1px solid #e9ecef;
+        padding-bottom: 5px;
+    }
+    
+    .sensor-info {
+        margin-bottom: 10px;
+    }
+    
+    .sensor-location {
+        font-weight: 500;
+    }
+    
+    .sensor-id {
+        font-size: 0.85rem;
+    }
+    
+    .aqi-display {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        gap: 5px;
+    }
+    
+    .aqi-label {
+        font-weight: 500;
+        flex-basis: 100%;
+    }
+    
+    .aqi-value {
+        display: inline-block;
+        width: 35px;
+        height: 35px;
+        line-height: 35px;
+        text-align: center;
+        border-radius: 50%;
+        font-weight: bold;
+    }
+    
+    .aqi-category {
+        font-size: 0.9rem;
+    }
+    
+    /* Customize Leaflet popup */
+    .leaflet-popup-content-wrapper {
+        border-radius: 8px;
+        box-shadow: 0 3px 14px rgba(0,0,0,0.2);
+    }
+    
+    .leaflet-popup-content {
+        margin: 10px;
+        min-width: 200px;
+    }
+</style>
 @endsection

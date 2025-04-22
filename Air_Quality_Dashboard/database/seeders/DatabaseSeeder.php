@@ -4,6 +4,8 @@ namespace Database\Seeders;
 
 use Illuminate\Database\Seeder;
 use Database\Seeders\AdminUserSeeder;
+use Database\Seeders\SensorSeeder;
+use Database\Seeders\AlertThresholdSeeder;
 
 class DatabaseSeeder extends Seeder
 {
@@ -14,7 +16,10 @@ class DatabaseSeeder extends Seeder
      */
     public function run()
     {
-        // Create admin user
-        $this->call(AdminUserSeeder::class);
+        $this->call([
+            AdminUserSeeder::class,
+            SensorSeeder::class,
+            AlertThresholdSeeder::class,
+        ]);
     }
 }

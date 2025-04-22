@@ -4,8 +4,12 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Air Quality Monitoring - Colombo</title>
+    <!-- Bootstrap CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <!-- Leaflet CSS (Added for map functionality) -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
     <style>
         body {
             padding-top: 20px;
@@ -29,6 +33,13 @@
             width: 20px;
             height: 20px;
             border: 2px solid white;
+        }
+        
+        /* Make sure map container is visible */
+        #map {
+            width: 100%;
+            height: 500px;
+            z-index: 1;
         }
     </style>
 </head>
@@ -97,7 +108,15 @@
         @yield('content')
     </div>
 
+    <!-- Bootstrap Bundle with Popper -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- jQuery -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <!-- Leaflet JS (Added for map functionality) -->
+    <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    
     <script>
         // Enable Bootstrap tooltips
         var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
@@ -105,5 +124,7 @@
             return new bootstrap.Tooltip(tooltipTriggerEl)
         })
     </script>
+    
+    @yield('scripts')
 </body>
 </html>

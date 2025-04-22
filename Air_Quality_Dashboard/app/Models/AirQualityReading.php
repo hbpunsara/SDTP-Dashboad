@@ -23,6 +23,15 @@ class AirQualityReading extends Model
     ];
     
     /**
+     * The attributes that should be cast.
+     *
+     * @var array
+     */
+    protected $casts = [
+        'reading_time' => 'datetime',
+    ];
+    
+    /**
      * Get the sensor that owns the reading.
      */
     public function sensor()

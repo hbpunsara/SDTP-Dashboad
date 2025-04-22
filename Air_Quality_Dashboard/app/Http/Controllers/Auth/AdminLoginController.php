@@ -28,22 +28,38 @@ class AdminLoginController extends Controller
     public function login(Request $request)
     {
         $request->validate([
-            'username' => 'required',
+            'username' => 'required|email',
             'password' => 'required',
         ]);
         
-        // Check against hardcoded admin credentials
-        // In a production app, this would use the database
+        // Find user by email (username field is actually email)
+        $user = \App\Models\User::where('email', $request->username)->first();
+        
+        // Check if user exists and is an admin with correct password
+        if ($user && $user->is_admin && Hash::check($request->password, $user->password)) {
+            // Store admin status and ID in session
+            session([
+                'is_admin' => true,
+                'admin_id' => $user->id,
+                'admin_name' => $user->name
+            ]);
+            
+            return redirect()->intended('/admin/dashboard');
+        }
+        
+        // Fallback for legacy admin login (can be removed later)
         if ($request->username === 'admin' && $request->password === 'admin123') {
             // Store admin status in session
-            session(['is_admin' => true]);
-            session(['admin_name' => 'Admin User']);
+            session([
+                'is_admin' => true,
+                'admin_name' => 'Admin User'
+            ]);
             
-            return redirect()->intended('/admin/sensors');
+            return redirect()->intended('/admin/dashboard');
         }
         
         return back()->withErrors([
-            'username' => 'The provided credentials do not match our records.',
+            'username' => 'The provided credentials do not match our records or you do not have administrator privileges.',
         ])->withInput($request->only('username'));
     }
     
@@ -56,7 +72,7 @@ class AdminLoginController extends Controller
     public function logout(Request $request)
     {
         // Clear admin session data
-        session()->forget(['is_admin', 'admin_name']);
+        session()->forget(['is_admin', 'admin_name', 'admin_id']);
         
         return redirect('/');
     }

@@ -13,10 +13,21 @@ class SensorController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(Request $request)
     {
-        $sensors = Sensor::with('latestReading')->get();
-        return view('admin.sensors.index', compact('sensors'));
+        $query = Sensor::with('latestReading');
+        
+        // Filter for critical alerts if requested
+        if ($request->has('filter') && $request->filter === 'critical') {
+            $query->whereHas('latestReading', function($q) {
+                $q->where('aqi', '>', 100); // AQI values above 100 are considered unhealthy
+            });
+        }
+        
+        $sensors = $query->get();
+        $filter = $request->filter ?? null;
+        
+        return view('admin.sensors.index', compact('sensors', 'filter'));
     }
 
     /**
@@ -126,7 +137,7 @@ class SensorController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function toggleActive($id)
+    public function toggleStatus($id)
     {
         $sensor = Sensor::findOrFail($id);
         $sensor->is_active = !$sensor->is_active;
